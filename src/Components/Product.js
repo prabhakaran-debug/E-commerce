@@ -240,7 +240,7 @@ function Product() {
                   src=""
                 />
               </div>
-              <div className="modal-footer">
+              <div className="modal-footer ">
                 <button type="submit" className="btn btn-primary">
                   Save Changes
                 </button>
