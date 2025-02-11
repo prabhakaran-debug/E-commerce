@@ -1,10 +1,19 @@
-import { data } from "jquery";
+// import { data } from "jquery";
 import React, { useEffect, useState } from "react";
-import {  useLocation, useNavigate, useSearchParams } from "react-router-dom";
+import {  useLocation, useNavigate } from "react-router-dom";
+import Header from "./Header";
+import './css/address.css';
+
+import PaymentButton from "./Paymentbutton";
 
 function Address() {
 
   const location = useLocation();
+  const { cartData } = location.state || { cartData: [] }; 
+  const { totalprice } = location.state || { totalprice: [] }; 
+
+console.log(JSON.stringify(cartData));
+  
   const { state } = location;
   const P_id = state?.product_id;
   console.log(P_id)
@@ -20,6 +29,11 @@ function Address() {
   });
   const navigate = useNavigate();
 
+  useEffect(() => {
+    console.log("Full cartData:", cartData);
+    console.log("Totalprice "+totalprice );
+    
+  }, [cartData]);
  
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -102,8 +116,10 @@ function Address() {
       }
   
       const data = await response.json();
+      console.log(data);
+      
       alert("Address updated successfully!");
-      fetchAddresses();  // Reload addresses after update
+      fetchAddresses(); 
     } catch (error) {
       console.error("Error updating address:", error);
       alert("An error occurred while updating the address.");
@@ -113,31 +129,37 @@ function Address() {
 
 
 
-  // Fetch the addresses
   const fetchAddresses = () => {
     fetch("http://localhost:5000/api/address")
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        setAddress(data); // Assuming `data` is an array
+        setAddress(data);
       })
       .catch((error) => console.error("Error fetching address:", error));
   };
 
   useEffect(() => {
     fetchAddresses();
+    
   }, []);
 
   const radioChange = (e) => {
     const value = e.target.value;
     setSelecteddata(value);
-    console.log(value);
+    console.log("Selected address ID:", value);
+};
+
+const idData = () => {
+  if (!selecteddata) {
+      alert("Please select an address.");
+      return;
   }
 
-  const idData = () =>{
-    navigate('/Preview',{state:{address_id:selecteddata,product_id:P_id}})
-    console.log(selecteddata)
-  }
+  console.log("cartData before navigation:", cartData); 
+  navigate('/Preview', { state: { address_id: selecteddata, product_id: P_id, cartData: cartData , totalprice:totalprice } });
+};
+
 
   const deleteAddress = (id) => {
     console.log("ID:", id);
@@ -167,6 +189,7 @@ console.log(addressdetails)
   
   return (
     <>
+    <Header/>
       <button
         className="btn btn-primary xl add-card"
         data-toggle="modal"
@@ -327,48 +350,62 @@ console.log(addressdetails)
   </div>
       </div>
 
+      <div className="main-div">
 
       <form>
-        <h2>Select an Address</h2>
-        {address.map((value) => (
-          <div key={value.id}>
-              <input
-                type="radio"
-                name="address"
-                value={value.id} 
-                onChange={radioChange}
-             />
-              {value.houseNo}, {value.street}, {value.city}, {value.state},{" "}
-              {value.country}
-              <button
-                  className="btn btn-warning"
-                  data-toggle="modal"
-                  data-target="#editAddress"
-                  onClick={(e) => {
-                    e.preventDefault(); 
-                    handleEditAddress(value.id); 
-                  }}
-              >
-                  Edit
-              </button>
+  <h2 >Select an Address</h2>
+  <table border="0" style={{ width: "80%", textAlign: "left" }}>
+   
+    
+    <tbody>
+      {address.map((value) => (
+        <tr key={value.id}>
+          <td>
+            <input
+              type="radio"
+              name="address"
+              value={value.id}
+              onChange={radioChange}
+            />
+          </td>
+          <td>
+            {value.houseNo}, {value.street}, {value.city}, {value.state},{" "}
+            {value.country}
+          </td>
+          <td>
+            <button
+              className="btn btn-warning"
+              data-toggle="modal"
+              data-target="#editAddress"
+              onClick={(e) => {
+                e.preventDefault();
+                handleEditAddress(value.id);
+              }}
+            >
+              Edit
+            </button>
+            <button
+              className="btn btn-danger"
+              onClick={(e) => {
+                e.preventDefault();
+                deleteAddress(selecteddata);
+              }}
+              style={{ marginLeft: "10px" }}
+            >
+              Delete
+            </button>
+          </td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</form>
+
+</div>
 
 
-                <button
-                  className="btn btn-danger"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    deleteAddress(selecteddata);
-                  }}
-                >
-                  Delete
-                </button>
-
-          </div>
-        ))}
-      </form>
-      
+        <button className="btn btn-primary delivery" onClick={idData}>Delivery here</button>
      
-      <button className="btn btn-primary" onClick={idData}>Delivery here</button>
       
     </>
 

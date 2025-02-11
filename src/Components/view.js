@@ -1,7 +1,7 @@
 // import { get } from "jquery";
 import React, { useEffect, useState } from "react";
 import {   useNavigate, useParams } from "react-router-dom";
- import '../Components/view.css'
+ import '../Components/css/view.css'
 // import PaymentButton from "./Paymentbutton";
 
 
@@ -34,10 +34,10 @@ function View(){
                     src={`http://localhost:5000/uploads/${product.image}`}
                     alt={product.name}
                     style={{ width: "300px", height: "200px" }}
-         />         <h4>Product id  :{product.id}</h4>
-         <h4>product name  :{product.name}</h4>
-         <h4>product price  :{product.price}</h4>
-         <h4>product category  :{product.category}</h4>
+         />         <p><strong>Product id  : </strong>{product.id}</p>
+         <p><strong>product Name  : </strong>{product.name}</p>
+         <p><strong>product Price  : </strong>{product.price}</p>
+         <p><strong>product Category  : </strong>{product.category}</p>
 
         
          <button className="btn btn-primary" onClick={pidData}>Next</button>
