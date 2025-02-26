@@ -1,17 +1,25 @@
 import React, { useEffect, useState } from "react";
 import Header from "./Header";
-import { jsPDF } from "jspdf"; 
+import { jsPDF } from "jspdf";
+import Pagination from "./Pagination"; // Assuming this is a custom pagination component.
+import { Pagination as BootstrapPagination } from "react-bootstrap";
 
 function Order() {
   const [orderdata, setOrderdata] = useState([]);
   const [orderIds, setOrderIds] = useState([]);
-  const [product, setProduct] = useState([]);
+  const [products, setProducts] = useState([]);
   const [status, setStatus] = useState([]);
   const [date, setDate] = useState([]);
+  const user_id = localStorage.getItem("user_id");
 
-  // Fetch Order Data
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(5);
+
+  // Fetch order data
   useEffect(() => {
-    fetch("http://localhost:5000/api/order")
+    const url = `http://localhost:5000/api/order?user_id=${user_id}`;
+
+    fetch(url)
       .then((response) => response.json())
       .then((orderdata) => {
         if (!Array.isArray(orderdata)) {
@@ -23,9 +31,9 @@ function Order() {
         setDate(orderdata.map((order) => new Date(order.date).toISOString().slice(0, 10)));
       })
       .catch((error) => console.error("Error fetching order data:", error.message));
-  }, []);
+  }, [user_id]);
 
-  // Fetch Product Data (Only when orderIds change)
+  // Fetch product data
   useEffect(() => {
     if (orderIds.length > 0) {
       fetch("http://localhost:5000/api/order-products", {
@@ -38,16 +46,21 @@ function Order() {
           if (!Array.isArray(data)) {
             throw new Error("Invalid product data format");
           }
-          setProduct(data);
+          setProducts(data);
         })
         .catch((error) => console.error("Error fetching product data:", error.message));
     }
   }, [orderIds]);
 
+  const lastPostIndex = currentPage * postsPerPage;
+  const firstPostIndex = lastPostIndex - postsPerPage;
+  const currentOrders = products.slice(firstPostIndex, lastPostIndex);
+
+  // Generate invoice PDF
   const generateInvoice = (order) => {
     const doc = new jsPDF();
     const marginLeft = 10;
-    let y = 20; 
+    let y = 20;
 
     doc.setFontSize(22).text("E-COMMERCE", 105, y, { align: "center" });
     y += 10;
@@ -99,16 +112,14 @@ function Order() {
       doc.text(text, marginLeft, y);
       y += 15;
   });
-  
-  
-    // Total Price
-    y += 10;
-    doc.text(`Total Price: ₹${totalPrice.toFixed(2)}`, marginLeft, y);
 
-    // Save PDF
-    doc.save(`Invoice_${order.orderId}.pdf`);
+  // Total Price
+  y += 10;
+  doc.text(`Total Price: ₹${totalPrice.toFixed(2)}`, marginLeft, y);
+
+  // Save PDF
+  doc.save(`Invoice_${order.orderId}.pdf`);
 };
-
 
   return (
     <>
@@ -118,8 +129,8 @@ function Order() {
           <h4 className="p-3">Order Page</h4>
         </center>
 
-        {Array.isArray(product) && product.length > 0 ? (
-          product.map((order) => (
+        {Array.isArray(products) && products.length > 0 ? (
+          currentOrders.map((order) => (
             <div key={order.orderId} className="card mb-3">
               <div className="card-header d-flex justify-content-between">
                 <h4>Order: {order.orderId}</h4>
@@ -181,6 +192,14 @@ function Order() {
         ) : (
           <p>No orders available</p>
         )}
+
+        {/* Pagination */}
+        <Pagination
+          totalOrders={products.length}
+          ordersPerPage={postsPerPage}
+          setCurrentPage={setCurrentPage}
+          currentPage={currentPage}
+        />
       </div>
     </>
   );

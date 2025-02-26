@@ -51,7 +51,10 @@ function Header() {
                     <Link className="header-a" to="/address">Address</Link>
                 </li>
                 <li className="hli">
-                    <Link className="header-a" to="/Order">My Order</Link>
+                    <Link className="header-a"
+                     to={{ pathname: "/Order" }} 
+                    state={{username:username}}
+                    >My Order</Link>
                 </li>
 
                 {role_name === "admin" && (
@@ -61,6 +64,9 @@ function Header() {
                         </li>
                         <li className="hli">
                             <Link className="header-a" to="/User">Users</Link>
+                        </li>
+                        <li className="hli">
+                            <Link className="header-a" to="/Dashboard">Dashboard</Link>
                         </li>
                     </>
                 )}

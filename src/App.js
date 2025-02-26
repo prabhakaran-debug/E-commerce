@@ -16,6 +16,7 @@ import react from 'react';
 import ForgotPassword from './Components/ForgotPassword';
 import Cart from './Components/Cart';
 import User from './Components/user';
+import  Dashboard from './Components/Dashboard';
 
 function App() {
     const [isAuthenticated, setIsAuthenticated] = react.useState(
@@ -57,6 +58,14 @@ function App() {
                                 element={
                                     <ProtectedRoute isAuthenticated={isAuthenticated}>
                                     {roleId === "2" ? <User /> : <Navigate to="/" />} {/* Only admin (role_id=2) can access */}
+                                    </ProtectedRoute>
+                                }
+                        />
+                        <Route
+                                path="/Dashboard"
+                                element={
+                                    <ProtectedRoute isAuthenticated={isAuthenticated}>
+                                    {roleId === "2" ? <Dashboard /> : <Navigate to="/" />} {/* Only admin (role_id=2) can access */}
                                     </ProtectedRoute>
                                 }
                         />

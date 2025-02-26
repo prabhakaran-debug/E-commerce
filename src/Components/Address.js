@@ -161,14 +161,27 @@ const idData = () => {
 };
 
 
-  const deleteAddress = (id) => {
-    console.log("ID:", id);
-  
-    fetch(`http://localhost:5000/api/address/delete/${id}`, {
-      method: "DELETE",
-    })
-    fetchAddresses();
-  };
+const deleteAddress = async (id) => {
+  console.log("Deleting ID:", id);
+
+  try {
+      const response = await fetch(`http://localhost:5000/api/address/delete/${id}`, {
+          method: "DELETE",
+      });
+
+      if (!response.ok) {
+          const errorData = await response.json();
+          console.error("Error deleting address:", errorData);
+          return;
+      }
+
+      console.log("Address deleted successfully");
+      fetchAddresses(); // Call this only after successful deletion
+  } catch (error) {
+      console.error("Error:", error);
+  }
+};
+
   
   const handleEditAddress = async (id) => {
       const response = await fetch(`http://localhost:5000/api/address/${id}`);

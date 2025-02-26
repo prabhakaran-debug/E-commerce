@@ -112,6 +112,7 @@ function Preview() {
                         productId={product_id}
                         addressId={address_id}
                         productDetail={product}
+                        price={product.price}
                     />
                 )}
             </div>

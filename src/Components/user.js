@@ -55,6 +55,7 @@ const handleEditClick = (user) => {
 
   const saveProduct = (event) => {
     event.preventDefault(); 
+  console.log(event);
   
     if (!isEditing) {
       if (!formData.username || !formData.user_role ) {
@@ -67,7 +68,7 @@ const handleEditClick = (user) => {
     const formDataObj = new FormData();
     formDataObj.append("username", formData.username);
     formDataObj.append("user_role", formData.user_role);
-  
+    // localStorage.setItem("role_id",formData.user_role)
   
     fetch(`http://localhost:5000/api/user/put/${formData.id}`, {
       method: "PUT",
@@ -80,11 +81,13 @@ const handleEditClick = (user) => {
     }),
     })
       .then((response) => response.json())
-      .then(() => {
+      .then((data) => {
+
         dataGet(); 
         setFormData({ id: "", username: "", user_role: ""});  
         setIsEditing(false); 
-  
+        
+        
        
       const editModal = document.getElementById("editProductModal");
 

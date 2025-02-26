@@ -37,6 +37,7 @@ function Login({ setIsAuthenticated }) {
                 localStorage.setItem("token", result.token);
                 localStorage.setItem("role_id",result.role_id)
                 localStorage.setItem("username",result.username)
+                localStorage.setItem("user_id",result.user_id)
                 navigate("/");
             } else if (response.status === 401) {
                 setError(result.error);

@@ -1,15 +1,17 @@
 import React from "react";
 
-function PaymentButton({ productId, addressId ,productDetail ,cartData,cartIds,totalprice}) {
+function PaymentButton({ productId, addressId ,productDetail ,cartData,cartIds,totalprice ,price}) {
   const handleCheckout = async () => {
+    const user_id=localStorage.getItem('user_id')
     console.log("handleCheckout method is run")
     const date = new Date();
     const currentdate = date.toISOString().slice(0, 10); // Formats to YYYY-MM-DD
     console.log("date " + currentdate);
+    console.log("user_id " + user_id);
     
     const requestBody = cartIds && cartIds.length > 0 
-    ? { cartIds, addressId ,totalprice}  
-    : { productId, addressId }; 
+    ? { cartIds, addressId ,totalprice , currentdate}  
+    : { productId, addressId ,price ,currentdate}; 
 
 try {
     const response = await fetch("http://localhost:5000/create-checkout-session", {
@@ -45,7 +47,8 @@ try {
         product_id: JSON.stringify(cartIds || productId) ,
         address_id: addressId,
         status: "pending",
-        date:currentdate
+        date:currentdate,
+        user_id:user_id,
       }),
 
     })
